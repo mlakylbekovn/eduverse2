@@ -1,0 +1,783 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>EduVerse</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a single phone-width column (max 420px) centered on a deep night-sky ground; fixed bottom tab bar. Deliberately dark-only, as the brief asks. */
+:root {
+  --bg: #090a1c;
+  --surface: rgba(255,255,255,0.05);
+  --surface-2: rgba(255,255,255,0.09);
+  --line: rgba(255,255,255,0.10);
+  --fg: #eef0ff;
+  --muted: #a3a8cc;
+  --primary: #7c5cff;
+  --primary-2: #4f6bff;
+  --accent: #2dd4bf;
+  --good: #34d399;
+  --bad: #fb7185;
+  --gold: #fbbf24;
+  --font: "Manrope", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; font-family: var(--font); font-size: 15px; color: var(--fg);
+  background: var(--bg);
+  background-image: radial-gradient(60rem 30rem at 110% -10%, rgba(124,92,255,.22), transparent 60%),
+                    radial-gradient(40rem 26rem at -20% 30%, rgba(45,212,191,.12), transparent 60%);
+  background-attachment: fixed;
+  overflow-x: hidden; overflow-wrap: anywhere; -webkit-font-smoothing: antialiased;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; text-wrap: pretty; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.app { max-width: 420px; margin: 0 auto; min-height: 100%; position: relative; }
+main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px calc(96px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; }
+
+.glass { background: var(--surface); border: 1px solid var(--line); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 18px; box-shadow: 0 10px 30px -14px rgba(0,0,0,.6); }
+.card { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.between { justify-content: space-between; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.xs { font-size: 11px; }
+.bold { font-weight: 700; }
+.section { display: flex; flex-direction: column; gap: 8px; }
+.section > h2 { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.tile { padding: 12px; display: flex; flex-direction: column; gap: 3px; }
+.tile .v { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.tile .l { font-size: 11px; color: var(--muted); line-height: 1.2; }
+.ic { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.sm { width: 14px; height: 14px; }
+.ic.lg { width: 24px; height: 24px; }
+.acc { color: var(--accent); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px; border-radius: 13px; border: 0; font-weight: 700; font-size: 14px; text-align: center; line-height: 1.2; text-decoration: none; color: #fff; background: linear-gradient(90deg, var(--primary-2), var(--primary)); box-shadow: 0 10px 24px -10px rgba(124,92,255,.7); transition: filter .15s, transform .1s; }
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: scale(.98); }
+.btn[disabled] { opacity: .5; pointer-events: none; }
+.btn.block { width: 100%; }
+.btn.sm { min-height: 36px; padding: 6px 12px; font-size: 12px; }
+.btn.accent { background: var(--accent); color: #062420; box-shadow: 0 10px 24px -12px rgba(45,212,191,.7); }
+.btn.ghost { background: var(--surface); border: 1px solid var(--line); box-shadow: none; color: var(--fg); }
+.btn.danger { background: rgba(251,113,133,.12); border: 1px solid rgba(251,113,133,.35); color: var(--bad); box-shadow: none; }
+.btn.icon { width: 44px; padding: 0; flex: none; }
+.link { color: var(--accent); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; min-height: 36px; background: none; border: 0; padding: 0; font-size: 14px; }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 700; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+.badge.p { color: #c4b5ff; background: rgba(124,92,255,.15); border-color: rgba(124,92,255,.35); }
+.badge.g { color: var(--good); background: rgba(52,211,153,.12); border-color: rgba(52,211,153,.3); }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.1); overflow: hidden; flex: 1; min-width: 0; }
+.bar > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .5s; }
+
+.input { width: 100%; min-width: 0; min-height: 44px; border-radius: 13px; border: 1px solid var(--line); background: var(--surface); padding: 10px 14px; outline: none; }
+.input:focus-visible { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(45,212,191,.25); }
+.input::placeholder { color: rgba(163,168,204,.7); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { min-height: 36px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 700; }
+.chip[aria-pressed="true"] { background: linear-gradient(90deg, var(--primary-2), var(--primary)); color: #fff; border-color: transparent; }
+
+.toast { font-size: 12px; font-weight: 700; color: var(--good); text-align: center; }
+.toast:empty { display: none; }
+
+/* Header */
+.logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; letter-spacing: -.02em; }
+.logo b { background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 99px; font-weight: 800; font-size: 14px; font-variant-numeric: tabular-nums; }
+.hello h1 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; }
+
+.hero-ai { position: relative; overflow: hidden; display: flex; gap: 12px; padding: 18px; border-radius: 18px; color: #fff; text-decoration: none; background: linear-gradient(135deg, var(--primary-2), var(--primary) 55%, #a855f7); box-shadow: 0 18px 40px -18px rgba(124,92,255,.8); border: 1px solid rgba(255,255,255,.12); }
+.hero-ai::after { content: ""; position: absolute; right: -30px; bottom: -40px; width: 150px; height: 150px; border-radius: 50%; background: rgba(45,212,191,.45); filter: blur(30px); }
+.hero-ai > * { position: relative; z-index: 1; }
+.hero-ai .bubble { width: 48px; height: 48px; flex: none; border-radius: 15px; background: rgba(255,255,255,.2); display: grid; place-items: center; }
+
+.lb li { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: 12px; }
+.lb li + li { border-top: 1px solid rgba(255,255,255,.05); }
+.lb li.me { background: rgba(124,92,255,.15); }
+.ava { width: 32px; height: 32px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--primary-2), var(--accent)); }
+ol, ul { list-style: none; margin: 0; padding: 0; }
+
+/* Lessons */
+.lesson-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; text-decoration: none; color: inherit; }
+a.lesson-item:hover { background: var(--surface-2); }
+.lesson-item.done { background: rgba(52,211,153,.06); }
+.lesson-item.next { border-color: rgba(45,212,191,.45); }
+.article { display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.65; white-space: pre-line; }
+
+.tabs { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 4px; padding: 4px; }
+.tab { min-height: 40px; border-radius: 13px; border: 0; background: none; color: var(--muted); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 4px; }
+.tab[aria-selected="true"] { background: linear-gradient(90deg, var(--primary-2), var(--primary)); color: #fff; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+.log { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+.msg.me { align-self: flex-end; background: linear-gradient(90deg, var(--primary-2), var(--primary)); color: #fff; border-bottom-right-radius: 5px; }
+.msg.ai { align-self: flex-start; background: rgba(255,255,255,.07); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+.typing { display: inline-flex; gap: 4px; padding: 13px 16px; }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: dot 1.2s infinite ease-in-out; }
+.typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%,80%,100% { opacity: .25; transform: none; } 40% { opacity: 1; transform: translateY(-3px); } }
+.composer { display: flex; align-items: flex-end; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+.composer textarea { resize: none; max-height: 120px; }
+.sugg { min-height: 40px; text-align: left; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 12px; font-weight: 600; }
+
+/* Quiz */
+fieldset { border: 0; margin: 0; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+legend { float: left; width: 100%; font-weight: 700; font-size: 14px; line-height: 1.4; margin-bottom: 4px; padding: 0; }
+.opt { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.03); font-size: 14px; cursor: pointer; }
+.opt:has(input:focus-visible) { outline: 2px solid var(--accent); }
+.opt.sel { border-color: var(--primary); background: rgba(124,92,255,.15); }
+.opt.ok { border-color: rgba(52,211,153,.55); background: rgba(52,211,153,.1); }
+.opt.no { border-color: rgba(251,113,133,.55); background: rgba(251,113,133,.1); }
+.opt.dim { opacity: .65; }
+.opt .k { width: 24px; height: 24px; flex: none; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: rgba(255,255,255,.1); color: var(--muted); }
+.opt.sel .k { background: var(--primary); color: #fff; }
+.explain { font-size: 12px; line-height: 1.5; color: var(--muted); background: rgba(255,255,255,.05); border-radius: 12px; padding: 8px 12px; }
+.err { font-size: 13px; color: var(--bad); background: rgba(251,113,133,.1); border: 1px solid rgba(251,113,133,.3); border-radius: 12px; padding: 8px 12px; }
+
+/* Achievements */
+.ach { padding: 12px; display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.ach.on { border-color: rgba(45,212,191,.45); background: rgba(45,212,191,.06); }
+.ach .medal { width: 40px; height: 40px; border-radius: 12px; flex: none; display: grid; place-items: center; background: rgba(255,255,255,.05); color: var(--muted); }
+.ach.on .medal { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+.achs { display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 360px) { .achs { grid-template-columns: 1fr 1fr; } }
+
+/* Campus */
+.stage { position: relative; height: 320px; overflow: hidden; }
+.stage canvas { display: block; width: 100% !important; height: 100% !important; touch-action: none; }
+.stage .hint { position: absolute; left: 8px; bottom: 8px; font-size: 10px; color: var(--muted); background: rgba(9,10,28,.7); border-radius: 99px; padding: 4px 8px; pointer-events: none; }
+.blds { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+@media (min-width: 360px) { .blds { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.bld { min-height: 44px; display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 700; text-align: left; }
+.bld[aria-pressed="true"] { border-color: var(--accent); background: rgba(45,212,191,.15); color: var(--fg); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+
+/* Nav */
+nav.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: rgba(9,10,28,.85); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+nav.tabbar ul { max-width: 420px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); }
+nav.tabbar a { min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--muted); text-decoration: none; font-size: 10px; font-weight: 700; line-height: 1.1; text-align: center; padding: 0 2px; }
+nav.tabbar a .ib { width: 44px; height: 28px; border-radius: 99px; display: grid; place-items: center; }
+nav.tabbar a[aria-current="page"] { color: var(--fg); }
+nav.tabbar a[aria-current="page"] .ib { background: linear-gradient(90deg, rgba(79,107,255,.65), rgba(124,92,255,.65)); color: #fff; }
+
+.back { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); text-decoration: none; font-size: 13px; min-height: 32px; }
+.page-title { font-size: 21px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; }
+.demo-note { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.4; }
+.skip { position: absolute; left: -999px; top: 8px; z-index: 50; background: var(--accent); color: #062420; padding: 8px 12px; border-radius: 10px; }
+.skip:focus { left: 8px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
+
+<div class="app">
+  <a class="skip" href="#main">Негізгі мазмұнға өту</a>
+  <main id="main" tabindex="-1"></main>
+  <nav class="tabbar" aria-label="Негізгі мәзір"><ul id="tabbar"></ul></nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+const COURSES = [{"id":1,"title":"Химия негіздері: атом және молекула","description":"Атомның құрылысын, периодтық кестені және химиялық байланыстарды қарапайым мысалдармен үйреніңіз.","subject":"chemistry","level":"Бастапқы","instructor":"Айгүл Серікова","rating":4.8,"students":1240,"lessons":[{"id":11,"title":"Атомның құрылысы","min":12,"content":"Атом — химиялық элементтің ең кіші бөлшегі. Ол ортасындағы ядродан және оны айнала қозғалатын электрондардан тұрады.\n\nЯдро протондар мен нейтрондардан құралған. Протонның заряды оң (+1), электронның заряды теріс (−1), ал нейтронның заряды жоқ. Атомдағы протондар мен электрондар саны тең болғандықтан, атом жалпы алғанда электрбейтарап.\n\nЭлементтің реттік нөмірі оның ядросындағы протондар санын көрсетеді. Мысалы, көміртектің (C) реттік нөмірі — 6, демек оның ядросында 6 протон, ал айналасында 6 электрон бар.\n\nАтомның массасы негізінен ядрода шоғырланған, себебі электрон протоннан шамамен 1836 есе жеңіл."},{"id":12,"title":"Периодтық кесте","min":15,"content":"Химиялық элементтердің периодтық кестесін 1869 жылы Д. И. Менделеев жасады. Кестеде элементтер реттік нөмірінің өсуі бойынша орналасқан.\n\nКестенің көлденең жолдары период деп аталады. Период нөмірі атомдағы электрон қабаттарының санын көрсетеді. Тік бағандар топ деп аталады: негізгі топтағы элементтердің сыртқы қабатындағы электрон саны бірдей, сондықтан олардың химиялық қасиеттері ұқсас.\n\nМысалы, I топтағы сілтілік металдар — литий (Li), натрий (Na), калий (K) — сумен белсенді әрекеттеседі. Ал VIII топтағы инертті газдар — гелий (He), неон (Ne), аргон (Ar) — басқа заттармен өте қиын әрекеттеседі."},{"id":13,"title":"Химиялық байланыс","min":14,"content":"Атомдар бір-бірімен химиялық байланыс арқылы қосылып, молекулалар мен кристалдар түзеді.\n\nИондық байланыс металл мен бейметалл атомдары арасында түзіледі: бір атом электронын береді, екіншісі қабылдайды. Мысалы, ас тұзы — натрий хлориді (NaCl).\n\nКовалентті байланыс ортақ электрон жұптары арқылы түзіледі. Егер атомдар бірдей болса (H₂, O₂), байланыс полюссіз болады. Ал су молекуласында (H₂O) оттегі электрондарды күштірек тартады, сондықтан байланыс полюсті.\n\nМеталдық байланыс металдарға тән: еркін электрондар бүкіл кристалда қозғалады. Сол себепті металдар электр тогын жақсы өткізеді."}]},{"id":2,"title":"Химиялық реакциялар","description":"Реакция түрлерін, теңдеулерді теңестіруді және қышқылдар мен негіздердің қасиеттерін меңгеріңіз.","subject":"chemistry","level":"Орта","instructor":"Ерлан Жақыпов","rating":4.7,"students":860,"lessons":[{"id":21,"title":"Реакция түрлері","min":13,"content":"Химиялық реакция кезінде бастапқы заттардан жаңа заттар түзіледі. Реакциялардың негізгі төрт түрі бар.\n\n1. Қосылу реакциясы: бірнеше заттан бір күрделі зат түзіледі. Мысалы: 2H₂ + O₂ → 2H₂O.\n2. Айырылу реакциясы: бір күрделі зат бірнеше қарапайым затқа ыдырайды. Мысалы, қыздырғанда: CaCO₃ → CaO + CO₂.\n3. Орынбасу реакциясы: жай зат күрделі заттағы бір элементтің орнын басады. Мысалы: Zn + 2HCl → ZnCl₂ + H₂.\n4. Алмасу реакциясы: екі күрделі зат құрамдас бөліктерімен алмасады. Мысалы: NaOH + HCl → NaCl + H₂O."},{"id":22,"title":"Теңдеулерді теңестіру","min":16,"content":"Массаның сақталу заңы бойынша реакцияға дейінгі және кейінгі заттардың жалпы массасы тең. Сондықтан теңдеудің екі жағындағы әр элемент атомдарының саны бірдей болуы керек.\n\nТеңестіру үшін формулалардың алдына коэффициенттер қоямыз. Формуланың ішіндегі индекстерді өзгертуге болмайды, себебі ол басқа затқа айналады.\n\nМысал: H₂ + O₂ → H₂O. Сол жақта оттегі атомы 2, оң жақта 1. Суға 2 коэффициентін қоямыз: H₂ + O₂ → 2H₂O. Енді оң жақта сутек атомы 4, сондықтан сутекке де 2 қоямыз: 2H₂ + O₂ → 2H₂O. Теңдеу теңестірілді."},{"id":23,"title":"Қышқылдар мен негіздер","min":15,"content":"Қышқылдар суда ерігенде сутек иондарын (H⁺) түзеді. Мысалы: тұз қышқылы (HCl), күкірт қышқылы (H₂SO₄). Қышқылдар лакмусты қызыл түске бояйды.\n\nНегіздер (сілтілер) суда ерігенде гидроксид иондарын (OH⁻) түзеді. Мысалы: натрий гидроксиді (NaOH). Сілтілер лакмусты көк түске бояйды.\n\nЕрітіндінің қышқылдығы pH шкаласымен өлшенеді: pH < 7 — қышқыл орта, pH = 7 — бейтарап орта (таза су), pH > 7 — сілтілік орта.\n\nҚышқыл мен негіз әрекеттескенде тұз бен су түзіледі — бұл бейтараптану реакциясы."}]},{"id":3,"title":"Механика негіздері","description":"Қозғалыс, күш және энергия туралы физиканың іргелі заңдарын түсініңіз.","subject":"physics","level":"Бастапқы","instructor":"Дәурен Әбілов","rating":4.9,"students":1530,"lessons":[{"id":31,"title":"Қозғалыс және жылдамдық","min":12,"content":"Механикалық қозғалыс — дененің уақыт өте келе басқа денелерге қатысты орнын өзгертуі.\n\nЖылдамдық дененің қаншалықты тез қозғалатынын көрсетеді. Бірқалыпты қозғалыс үшін: v = s / t, мұндағы s — жүрілген жол, t — уақыт. Халықаралық бірліктер жүйесінде жылдамдық метр/секундпен (м/с) өлшенеді.\n\nМысал: велосипедші 600 метрді 2 минутта (120 секундта) жүрді. Оның жылдамдығы: v = 600 / 120 = 5 м/с.\n\nҮдеу — жылдамдықтың өзгеру шапшаңдығы: a = (v − v₀) / t. Үдеу м/с²-пен өлшенеді."},{"id":32,"title":"Ньютон заңдары","min":16,"content":"Ньютонның бірінші заңы (инерция заңы): егер денеге күш әсер етпесе немесе күштер теңгерілсе, дене тыныштықта болады немесе бірқалыпты түзу сызықты қозғалады.\n\nНьютонның екінші заңы: денеге әсер ететін күш оның массасы мен үдеуінің көбейтіндісіне тең: F = m · a. Күш ньютонмен (Н) өлшенеді. Мысалы, массасы 2 кг денеге 3 м/с² үдеу беру үшін 6 Н күш керек.\n\nНьютонның үшінші заңы: екі дене бір-біріне шамасы тең, бағыты қарама-қарсы күштермен әсер етеді. Мысалы, зымыран газды артқа итереді, ал газ зымыранды алға итереді."},{"id":33,"title":"Жұмыс және энергия","min":15,"content":"Механикалық жұмыс денеге күш әсер етіп, ол орын ауыстырғанда орындалады: A = F · s. Жұмыс джоульмен (Дж) өлшенеді.\n\nКинетикалық энергия — қозғалыс энергиясы: Eк = m · v² / 2. Потенциалдық энергия — дененің биіктікке байланысты энергиясы: Eп = m · g · h, мұндағы g ≈ 9,8 м/с².\n\nЭнергияның сақталу заңы: тұйық жүйеде энергия жоғалмайды және жоқтан пайда болмайды, тек бір түрден екінші түрге ауысады. Мысалы, құлап келе жатқан доптың потенциалдық энергиясы кинетикалық энергияға айналады."}]},{"id":4,"title":"Алгебра: теңдеулер","description":"Сызықтық және квадрат теңдеулерді, теңдеулер жүйесін қадамдап шешуді үйреніңіз.","subject":"math","level":"Орта","instructor":"Мадина Қасымова","rating":4.8,"students":2100,"lessons":[{"id":41,"title":"Сызықтық теңдеулер","min":12,"content":"Сызықтық теңдеудің жалпы түрі: a · x + b = 0, мұндағы a ≠ 0. Оның жалғыз шешімі бар: x = −b / a.\n\nШешу қадамдары:\n1. Белгісізі бар мүшелерді бір жаққа, сандарды екінші жаққа таңбасын өзгертіп шығарамыз.\n2. Ұқсас мүшелерді біріктіреміз.\n3. Екі жағын да x-тің коэффициентіне бөлеміз.\n\nМысал: 3x + 6 = 0 → 3x = −6 → x = −2.\nТағы бір мысал: 5x − 4 = 2x + 8 → 3x = 12 → x = 4.\n\nТексеру: табылған мәнді бастапқы теңдеуге қойып, екі жағы тең екеніне көз жеткіземіз."},{"id":42,"title":"Квадрат теңдеулер","min":18,"content":"Квадрат теңдеудің жалпы түрі: a · x² + b · x + c = 0, мұндағы a ≠ 0.\n\nАлдымен дискриминантты табамыз: D = b² − 4ac.\n• D > 0 болса, екі түрлі түбір бар: x = (−b ± √D) / (2a).\n• D = 0 болса, бір түбір бар: x = −b / (2a).\n• D < 0 болса, нақты түбірлер жоқ.\n\nМысал: x² − 5x + 6 = 0. Мұнда a = 1, b = −5, c = 6. D = 25 − 24 = 1. Түбірлері: x₁ = (5 + 1) / 2 = 3, x₂ = (5 − 1) / 2 = 2.\n\nВиет теоремасы: x₁ + x₂ = −b / a, x₁ · x₂ = c / a. Біздің мысалда 3 + 2 = 5 және 3 · 2 = 6."},{"id":43,"title":"Теңдеулер жүйесі","min":15,"content":"Екі белгісізі бар екі теңдеу бірге қарастырылса, теңдеулер жүйесі деп аталады. Жүйенің шешімі — екі теңдеуді де қанағаттандыратын (x; y) жұбы.\n\nАуыстыру әдісі: бір теңдеуден бір белгісізді өрнектеп, оны екінші теңдеуге қоямыз.\n\nҚосу әдісі: теңдеулерді қосқанда немесе азайтқанда бір белгісіз жойылатындай етеміз.\n\nМысал: x + y = 5 және x − y = 1. Екі теңдеуді қоссақ: 2x = 6, демек x = 3. Енді бірінші теңдеуге қоямыз: 3 + y = 5, яғни y = 2. Жауабы: (3; 2)."}]},{"id":5,"title":"Геометрия негіздері","description":"Үшбұрыштар, Пифагор теоремасы және фигуралардың ауданы мен периметрі.","subject":"math","level":"Бастапқы","instructor":"Бауыржан Омаров","rating":4.6,"students":980,"lessons":[{"id":51,"title":"Үшбұрыштар","min":11,"content":"Үшбұрыш — бір түзудің бойында жатпайтын үш нүктені кесінділермен қосқанда пайда болатын фигура. Оның үш қабырғасы, үш төбесі және үш бұрышы бар.\n\nКез келген үшбұрыштың ішкі бұрыштарының қосындысы 180°-қа тең.\n\nБұрыштары бойынша: сүйірбұрышты (барлық бұрыштары 90°-тан кіші), тікбұрышты (бір бұрышы 90°), доғалбұрышты (бір бұрышы 90°-тан үлкен).\n\nҚабырғалары бойынша: әртүрлі қабырғалы, теңбүйірлі (екі қабырғасы тең) және теңқабырғалы (үш қабырғасы тең, әр бұрышы 60°).\n\nҮшбұрыш теңсіздігі: кез келген қабырға қалған екі қабырғаның қосындысынан кіші."},{"id":52,"title":"Пифагор теоремасы","min":14,"content":"Пифагор теоремасы тікбұрышты үшбұрышқа ғана қолданылады. Тік бұрышқа іргелес қабырғалар катеттер (a және b), ал тік бұрышқа қарсы жатқан ең ұзын қабырға гипотенуза (c) деп аталады.\n\nТеорема: гипотенузаның квадраты катеттердің квадраттарының қосындысына тең: c² = a² + b².\n\nМысал: катеттері 3 см және 4 см болса, c² = 9 + 16 = 25, демек c = 5 см.\n\nКатетті табу: a² = c² − b². Мысалы, гипотенуза 13, бір катет 5 болса, екінші катет: √(169 − 25) = √144 = 12."},{"id":53,"title":"Аудан және периметр","min":13,"content":"Периметр — фигураның барлық қабырғалары ұзындықтарының қосындысы. Аудан — фигураның жазықтықта алатын орнының өлшемі.\n\nТіктөртбұрыш: P = 2 · (a + b), S = a · b.\nШаршы: P = 4a, S = a².\nҮшбұрыш: S = (a · h) / 2, мұндағы h — a қабырғасына түсірілген биіктік.\nДөңгелек: шеңбер ұзындығы C = 2πr, ауданы S = πr², мұндағы π ≈ 3,14.\n\nМысал: ұзындығы 8 м, ені 5 м бөлменің ауданы S = 8 · 5 = 40 м², ал периметрі P = 2 · (8 + 5) = 26 м."}]},{"id":6,"title":"Ағылшын тілі: A1 деңгейі","description":"Ағылшын тілінде өзіңізді таныстыруды, to be етістігін және Present Simple шағын үйреніңіз.","subject":"languages","level":"Бастапқы","instructor":"Әсел Нұрланқызы","rating":4.7,"students":1750,"lessons":[{"id":61,"title":"Өзіңді таныстыру","min":10,"content":"Ағылшын тілінде танысу үшін қарапайым сөйлемдерді қолданамыз:\n\n• Hello! / Hi! — Сәлем!\n• My name is Aru. — Менің атым Ару.\n• I am from Kazakhstan. — Мен Қазақстаннанмын.\n• I live in Astana. — Мен Астанада тұрамын.\n• Nice to meet you! — Танысқаныма қуаныштымын!\n\nСұрақтар қою:\n• What is your name? — Сенің атың кім?\n• Where are you from? — Сен қайдансың?\n• How old are you? — Сен нешедесің?\n\nЕсте сақтаңыз: ағылшын тілінде «I» (мен) әрқашан бас әріппен жазылады."},{"id":62,"title":"To be етістігі","min":13,"content":"To be етістігі «болу» деген мағынаны береді және осы шақта үш формада қолданылады:\n\n• I am — мен ...мын\n• He / She / It is — ол ...\n• You / We / They are — сен / біз / олар ...\n\nМысалдар: I am a student. She is a teacher. They are friends.\n\nБолымсыз түрі not арқылы жасалады: I am not tired. He is not (isn't) at home. We are not (aren't) late.\n\nСұраулы түрінде етістік бастауыштың алдына шығады: Are you ready? Is she your sister? Жауабы: Yes, I am. / No, she isn't."},{"id":63,"title":"Present Simple шағы","min":15,"content":"Present Simple (жай осы шақ) әдеттегі, қайталанатын іс-әрекеттерді және жалпы фактілерді білдіреді.\n\nБолымды түрі: I / You / We / They + етістік: I play football. They live in Almaty.\nHe / She / It + етістік + -s (-es): She plays the piano. He watches TV.\n\nБолымсыз түрі: don't / doesn't + етістік: I don't like coffee. She doesn't speak French.\n\nСұраулы түрі: Do / Does + бастауыш + етістік: Do you like music? Does he work here?\n\nЖиі қолданылатын сөздер: always (әрқашан), usually (әдетте), often (жиі), sometimes (кейде), never (ешқашан)."}]}];
+const SUBJECTS = { chemistry: "Химия", physics: "Физика", math: "Математика", languages: "Тілдер" };
+const FILTERS = [["all","Барлығы"],["chemistry","Химия"],["physics","Физика"],["math","Математика"],["languages","Тілдер"]];
+const PEERS = [["Айгерім Б.", 640], ["Нұрсұлтан А.", 520], ["Дана М.", 410], ["Ерасыл Т.", 260]];
+const BUILDINGS = [
+  { id: "library", name: "Кітапхана", color: 0x6d5bff, hex: "#6d5bff", pos: [-3.3, -1.4], desc: "Барлық курстар мен оқу материалдары осында жиналған. Өзіңізге қызықты пәнді табыңыз.", href: "#courses", cta: "Курстарға өту" },
+  { id: "lab", name: "Зертхана", color: 0x2dd4bf, hex: "#2dd4bf", pos: [0, -3.4], desc: "Химиялық тәжірибелер мен реакциялар әлемі. Химия курстарынан бастаңыз.", href: "#courses-chemistry", cta: "Химия курстары" },
+  { id: "lecture", name: "Дәріс залы", color: 0x818cf8, hex: "#818cf8", pos: [3.3, -1.4], desc: "Оқытушылардың дәрістері мен сабақтары өтетін кампустың басты залы.", href: "#courses", cta: "Сабақтарды көру" },
+  { id: "ai", name: "AI орталығы", color: 0xa855f7, hex: "#a855f7", pos: [0, 0.6], desc: "Жасанды интеллект тьюторы кез келген сұрағыңызға қазақ тілінде жауап береді.", href: "#tutor", cta: "AI-тьюторға өту" },
+  { id: "sport", name: "Спорт", color: 0x38bdf8, hex: "#38bdf8", pos: [-3, 2.9], desc: "Белсенді демалыс пен денсаулыққа арналған спорт кешені." },
+  { id: "cafe", name: "Кафе", color: 0xf59e0b, hex: "#f59e0b", pos: [3, 2.9], desc: "Сабақ арасындағы үзілісте достармен кездесетін жайлы орын." },
+];
+
+/* ---------- icons (lucide-style paths) ---------- */
+const P = {
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  bot: '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M8 14h.01M16 14h.01M2 13v3M22 13v3"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  spark: '<path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+  circle: '<circle cx="12" cy="12" r="9"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  left: '<path d="m15 18-6-6 6-6"/>',
+  right: '<path d="m9 18 6-6-6-6"/>',
+  star: '<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  grad: '<path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>',
+  medal: '<circle cx="12" cy="15" r="6"/><path d="M8.5 10 5 3h4l3 5M15.5 10 19 3h-4l-3 5"/>',
+  quiz: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1 1 2-2M3.5 12l1 1 2-2M3.5 18l1 1 2-2"/>',
+  send: '<path d="M4 12 20 4l-6 16-3-7z"/><path d="m11 13 9-9"/>',
+  stop: '<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  flame: '<path d="M12 22c4 0 7-2.7 7-7 0-4-3-6-4-10-2 2-3 4-3 6-1.5-1-2-2.5-2-4C7 9 5 12 5 15c0 4.3 3 7 7 7z"/>',
+  zap: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  feet: '<path d="M7 14c-1.5 0-2.5-1.5-2.5-4S5.5 4 7.5 4 10 6.5 10 8.5 8.5 14 7 14zM17 20c1.5 0 2.5-1.5 2.5-4S18.5 10 16.5 10 14 12.5 14 14.5 15.5 20 17 20z"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  cloud: '<path d="M7 18a5 5 0 0 1-.5-10A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/>',
+  logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/>',
+  hand: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V12M14 11V6.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L3 15a1.5 1.5 0 0 1 2.4-1.8L8 15"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+};
+const ic = (n, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => new Intl.NumberFormat("ru-RU").format(n);
+const initials = (n) => n.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toLocaleUpperCase("kk-KZ") || "").join("") || "?";
+const dayKey = (d = new Date()) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const shiftDay = (k, n) => { const d = new Date(k + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+
+/* ---------- state (demo: kept in this browser only) ---------- */
+const STORE = "eduverse-demo-v1";
+function seedState() {
+  const today = dayKey(), y = shiftDay(today, -1);
+  return {
+    name: "Әлия Серікқызы",
+    email: "demo@eduverse.kz",
+    enrolled: [1],
+    done: [11],
+    events: [ { key: "enroll:1", amount: 20, day: y }, { key: "lesson:11", amount: 50, day: today } ],
+    activeDays: [y, today],
+    quizzes: {},
+    tutorCount: 0,
+  };
+}
+let S;
+try { S = JSON.parse(localStorage.getItem(STORE)) || seedState(); } catch { S = seedState(); }
+function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch {} }
+function award(key, amount) {
+  if (S.events.some((e) => e.key === key)) return 0;
+  S.events.push({ key, amount, day: dayKey() });
+  touchDay();
+  return amount;
+}
+function touchDay() { const t = dayKey(); if (!S.activeDays.includes(t)) S.activeDays.push(t); }
+
+const lessonById = (id) => { for (const c of COURSES) for (const l of c.lessons) if (l.id === id) return { lesson: l, course: c }; return null; };
+function stats() {
+  const total = S.events.reduce((s, e) => s + e.amount, 0);
+  const month = dayKey().slice(0, 7);
+  const monthPts = S.events.filter((e) => e.day.startsWith(month)).reduce((s, e) => s + e.amount, 0);
+  let cur = dayKey(); if (!S.activeDays.includes(cur)) cur = shiftDay(cur, -1);
+  let streak = 0; while (S.activeDays.includes(cur)) { streak++; cur = shiftDay(cur, -1); }
+  const results = Object.values(S.quizzes).flatMap((q) => q.history || []);
+  const avg = results.length ? Math.round(results.reduce((s, r) => s + r.score / r.total, 0) / results.length * 100) : null;
+  const perfect = results.some((r) => r.score === r.total);
+  const coursesDone = COURSES.filter((c) => S.enrolled.includes(c.id) && c.lessons.every((l) => S.done.includes(l.id))).length;
+  return { total, monthPts, streak, avg, perfect, coursesDone, lessons: S.done.length, enrolled: S.enrolled.length, tutor: S.tutorCount };
+}
+function achievements(st) {
+  return [
+    ["footprints", "feet", "Алғашқы қадам", "Алғашқы сабақты аяқтаңыз", st.lessons, 1],
+    ["bookworm", "book", "Кітап құрты", "10 сабақты аяқтаңыз", st.lessons, 10],
+    ["course", "grad", "Курс аяқталды", "Бір курсты толық аяқтаңыз", st.coursesDone, 1],
+    ["perfect", "star", "Тамаша балл", "AI тестте барлық сұраққа дұрыс жауап беріңіз", st.perfect ? 1 : 0, 1],
+    ["active", "zap", "Белсенді оқушы", "500 ұпай жинаңыз", st.total, 500],
+    ["ai", "bot", "AI зерттеуші", "AI-тьюторға 5 сұрақ қойыңыз", st.tutor, 5],
+    ["streak", "flame", "3 күндік серия", "3 күн қатарынан оқыңыз", st.streak, 3],
+  ].map(([id, icon, title, desc, cur, target]) => ({ id, icon, title, desc, cur: Math.min(cur, target), target, on: cur >= target }));
+}
+function courseProgress(c) { const d = c.lessons.filter((l) => S.done.includes(l.id)).length; return { d, pct: Math.round(d / c.lessons.length * 100), next: c.lessons.find((l) => !S.done.includes(l.id)) || null }; }
+
+/* ---------- Claude (AI) ---------- */
+let samplePromise = null;
+function getSample() {
+  if (!samplePromise) samplePromise = window.claude?.use ? window.claude.use("sample").catch(() => null) : Promise.resolve(null);
+  return samplePromise;
+}
+const aiErr = (e) => ({
+  not_granted: "AI-ға рұқсат берілмеді. Беттің рұқсаттарын тексеріңіз.",
+  sampling_disabled: "Бұл аккаунтта AI қолжетімсіз.",
+  rate_limited: "Тым көп сұраныс. Біраз күтіп, қайталаңыз.",
+  invalid_json: "AI жауабы дұрыс пішімде келмеді. Қайталап көріңіз.",
+  refused: "AI бұл сұраққа жауап бермеді. Басқаша сұрап көріңіз.",
+}[e?.code] || "Жауап алу мүмкін болмады. Қайталап көріңіз.");
+
+const TUTOR_RULES = `Сен — EduVerse білім беру платформасының AI-тьюторысың.
+Ережелер:
+- Әрқашан тек қазақ тілінде жауап бер, тіпті оқушы басқа тілде жазса да.
+- Жауабың қарапайым, қысқа (2–5 сөйлем) және түсінікті болсын. Қажет болса, бір қысқа мысал келтір.
+- Markdown белгілерін (**, #, кестелер) қолданба — жай мәтін жаз.
+- Білмейтін нәрсені ойдан құрастырма. Оқуға қатысы жоқ сұраныстарда оқушыны сабаққа қайта бағытта.`;
+
+/* ---------- router ---------- */
+const NAV = [["home", "Басты", "home"], ["courses", "Іздеу", "search"], ["tutor", "AI-тьютор", "bot"], ["achievements", "Марапат", "trophy"], ["profile", "Профиль", "user"]];
+const main = document.getElementById("main");
+let cleanup = null;
+function route() {
+  if (cleanup) { cleanup(); cleanup = null; }
+  const h = (location.hash || "#home").slice(1);
+  let m, tab = "home";
+  if (h === "home" || h === "") renderHome();
+  else if ((m = h.match(/^courses(?:-(\w+))?$/))) { tab = "courses"; renderCourses(m[1] || "all"); }
+  else if ((m = h.match(/^course-(\d+)$/))) { tab = "courses"; renderCourse(+m[1]); }
+  else if ((m = h.match(/^lesson-(\d+)(?:-(tutor|quiz))?$/))) { tab = "courses"; renderLesson(+m[1], m[2] || "lesson"); }
+  else if (h === "tutor") { tab = "tutor"; renderTutorPage(); }
+  else if (h === "achievements") { tab = "achievements"; renderAchievements(); }
+  else if (h === "profile") { tab = "profile"; renderProfile(); }
+  else if (h === "campus") { renderCampus(); }
+  else renderHome();
+  document.getElementById("tabbar").innerHTML = NAV.map(([id, label, icon]) =>
+    `<li><a href="#${id}" ${id === tab ? 'aria-current="page"' : ""}><span class="ib">${ic(icon)}</span>${label}</a></li>`).join("");
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+const go = (h) => { if (location.hash === "#" + h) route(); else location.hash = h; };
+
+/* ---------- screens ---------- */
+function header(title, backHref, backLabel, sub) {
+  return `<header style="display:flex;flex-direction:column;gap:6px">
+    ${backHref ? `<a class="back" href="${backHref}">${ic("left", "sm")}${esc(backLabel)}</a>` : ""}
+    <h1 class="page-title">${esc(title)}</h1>${sub ? `<p class="muted small">${esc(sub)}</p>` : ""}</header>`;
+}
+
+function renderHome() {
+  const st = stats();
+  const unlocked = achievements(st).filter((a) => a.on).length;
+  const first = S.name.split(/\s+/)[0];
+  const hr = new Date().getHours();
+  const greet = hr >= 5 && hr < 12 ? "Қайырлы таң" : hr < 18 && hr >= 12 ? "Қайырлы күн" : "Қайырлы кеш";
+  const enrolled = COURSES.filter((c) => S.enrolled.includes(c.id));
+  const cont = enrolled.find((c) => courseProgress(c).next) || enrolled[0];
+  const board = [...PEERS.map(([n, p]) => ({ n, p })), { n: S.name.split(/\s+/)[0] + (S.name.split(/\s+/)[1] ? " " + S.name.split(/\s+/)[1][0] + "." : ""), p: st.total, me: true }]
+    .sort((a, b) => b.p - a.p).slice(0, 5);
+  let contHtml;
+  if (!cont) contHtml = `<div class="glass card" style="align-items:center;text-align:center">${ic("compass", "lg acc")}<p class="bold">Әлі курсқа тіркелмегенсіз</p><p class="muted small">Өзіңізге ұнайтын курсты таңдаңыз.</p><a class="btn sm" href="#courses">Курстарды қарау</a></div>`;
+  else {
+    const pr = courseProgress(cont);
+    contHtml = `<div class="glass card">
+      <div class="row" style="align-items:flex-start"><span class="ava" style="border-radius:12px;width:44px;height:44px">${ic("book")}</span>
+        <div style="min-width:0"><a href="#course-${cont.id}" style="color:inherit;font-weight:800;text-decoration:none">${esc(cont.title)}</a>
+        <p class="xs muted">${pr.d}/${cont.lessons.length} сабақ аяқталды</p></div></div>
+      <div class="row"><div class="bar" role="progressbar" aria-label="Курс прогрессі" aria-valuenow="${pr.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pr.pct}%"></i></div><span class="xs bold">${pr.pct}%</span></div>
+      ${pr.next ? `<p class="xs muted">Келесі: <span style="color:var(--fg)">${esc(pr.next.title)}</span></p><a class="btn block" href="#lesson-${pr.next.id}">Келесі сабақ ${ic("arrow", "sm")}</a>` : `<p class="small bold" style="color:var(--good)">Курс толық аяқталды! 🎉</p>`}
+    </div>`;
+  }
+  main.innerHTML = `
+  <header style="display:flex;flex-direction:column;gap:14px">
+    <div class="row between"><span class="logo"><svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f6bff"/><stop offset=".6" stop-color="#7c5cff"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#lg)"/><path d="M18 24 32 17l14 7-14 7z" fill="#fff"/><path d="M23 29v8c0 3 4 6 9 6s9-3 9-6v-8l-9 4.5z" fill="#fff" fill-opacity=".85"/></svg>Edu<b>Verse</b></span>
+      <span class="glass pill" aria-label="Жалпы ұпай ${st.total}"><span style="color:var(--gold);display:inline-flex">${ic("spark", "sm")}</span>${fmt(st.total)}</span></div>
+    <div class="hello"><p class="muted small">${greet},</p><h1>${esc(first)}! 👋</h1><p class="muted small" style="margin-top:4px">Бүгін жаңа білімге бір қадам жақындайық.</p></div>
+  </header>
+  <section class="grid3" aria-label="Статистика">
+    <div class="glass tile">${ic("medal", "sm acc")}<span class="v">${unlocked}/7</span><span class="l">Жетістік</span></div>
+    <div class="glass tile">${ic("book", "sm acc")}<span class="v">${st.enrolled}</span><span class="l">Курстар</span></div>
+    <div class="glass tile">${ic("quiz", "sm acc")}<span class="v">${st.avg === null ? "—" : st.avg + "%"}</span><span class="l">Тест нәтижесі</span></div>
+  </section>
+  <section class="section"><h2>Оқуды жалғастыру</h2>${contHtml}</section>
+  <a class="hero-ai" href="#tutor"><span class="bubble">${ic("bot", "lg")}</span><span style="display:flex;flex-direction:column;gap:6px;min-width:0"><span style="font-size:18px;font-weight:800;line-height:1.2">AI-тьюторға сұрақ қойыңыз</span><span style="font-size:13px;opacity:.88">Кез келген тақырыпты қазақ тілінде қарапайым әрі қысқа түсіндіреді.</span><span class="bold small" style="display:inline-flex;align-items:center;gap:4px">Сөйлесуді бастау ${ic("arrow", "sm")}</span></span></a>
+  <section class="section"><h2>Кампусты зерттеу</h2><div class="glass card">
+    <p class="muted small">3D виртуалды кампуста кітапхана, зертхана, дәріс залы және AI орталығын аралаңыз.</p>
+    <div class="row" style="flex-wrap:wrap;gap:6px">${BUILDINGS.map((b) => `<span class="badge"><span class="dot" style="background:${b.hex};width:8px;height:8px"></span>${b.name}</span>`).join("")}</div>
+    <a class="link" href="#campus">3D кампусты ашу ${ic("arrow", "sm")}</a></div></section>
+  <section class="section"><h2>Үздік оқушылар</h2><div class="glass" style="padding:6px"><ol class="lb">
+    ${board.map((r, i) => `<li class="${r.me ? "me" : ""}"><span class="small bold muted" style="width:18px;text-align:center">${i + 1}</span><span class="ava" aria-hidden="true">${esc(initials(r.n))}</span><span class="small bold" style="flex:1;min-width:0">${esc(r.n)}${r.me ? ' <span class="xs" style="color:var(--accent);font-weight:600">(сіз)</span>' : ""}</span><span class="small bold" style="font-variant-numeric:tabular-nums">${fmt(r.p)}</span></li>`).join("")}
+  </ol></div></section>
+  <p class="demo-note">Демо нұсқа: прогресс осы браузерде сақталады. Толық нұсқа Huawei Cloud RDS дерекқорымен жұмыс істейді.</p>`;
+}
+
+function courseCard(c) {
+  const enrolled = S.enrolled.includes(c.id);
+  const pr = courseProgress(c);
+  return `<li class="glass card">
+    <div class="badges"><span class="badge p">${SUBJECTS[c.subject]}</span><span class="badge">${esc(c.level)}</span>${enrolled ? '<span class="badge g">Тіркелгенсіз</span>' : ""}</div>
+    <div><h2 style="font-size:16px;font-weight:800;line-height:1.3"><a href="#course-${c.id}" style="color:inherit;text-decoration:none">${esc(c.title)}</a></h2><p class="muted small" style="margin-top:4px;line-height:1.5">${esc(c.description)}</p></div>
+    <dl style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:0" class="xs muted">
+      <div style="grid-column:span 2"><dt class="sr">Оқытушы</dt><dd class="row" style="margin:0;gap:6px">${ic("grad", "sm acc")}${esc(c.instructor)}</dd></div>
+      <div><dt class="sr">Рейтинг</dt><dd class="row" style="margin:0;gap:6px"><span style="color:var(--gold);display:inline-flex">${ic("star", "sm")}</span>${c.rating.toFixed(1)}</dd></div>
+      <div><dt class="sr">Студенттер</dt><dd class="row" style="margin:0;gap:6px">${ic("users", "sm acc")}${fmt(c.students + (enrolled ? 1 : 0))} студент</dd></div>
+      <div><dt class="sr">Сабақтар</dt><dd class="row" style="margin:0;gap:6px">${ic("book", "sm acc")}${c.lessons.length} сабақ</dd></div>
+    </dl>
+    ${enrolled ? `<div class="row"><div class="bar"><i style="width:${pr.pct}%"></i></div><span class="xs bold">${pr.pct}%</span></div><a class="btn ghost block" href="#course-${c.id}">Оқуды жалғастыру ${ic("arrow", "sm")}</a>`
+      : `<button class="btn block" data-enroll="${c.id}">+ Тіркелу</button>`}
+    <p class="toast" role="status" aria-live="polite" data-toast="${c.id}"></p>
+  </li>`;
+}
+function enroll(id) {
+  if (!S.enrolled.includes(id)) S.enrolled.push(id);
+  const pts = award("enroll:" + id, 20); save();
+  return pts;
+}
+
+function renderCourses(subject) {
+  let filter = SUBJECTS[subject] ? subject : "all", q = "";
+  main.innerHTML = `${header("Курстар", null, null, "Пәнді таңдап, жаңа білімді бастаңыз")}
+    <div role="search" style="position:relative"><label class="sr" for="q">Курстарды іздеу</label>
+      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);display:flex">${ic("search", "sm")}</span>
+      <input id="q" class="input" type="search" maxlength="100" placeholder="Курс, пән немесе оқытушы…" style="padding-left:38px"></div>
+    <div class="chips" role="group" aria-label="Санаттар" id="chips"></div>
+    <p class="xs muted" id="count" aria-live="polite"></p>
+    <ul id="list" style="display:flex;flex-direction:column;gap:12px"></ul>`;
+  const draw = () => {
+    document.getElementById("chips").innerHTML = FILTERS.map(([id, l]) => `<button class="chip" aria-pressed="${id === filter}" data-f="${id}">${l}</button>`).join("");
+    const qq = q.trim().toLocaleLowerCase("kk-KZ");
+    const list = COURSES.filter((c) => (filter === "all" || c.subject === filter) && (!qq || [c.title, c.description, c.instructor].some((t) => t.toLocaleLowerCase("kk-KZ").includes(qq))));
+    document.getElementById("count").textContent = `${list.length} курс табылды`;
+    document.getElementById("list").innerHTML = list.length ? list.map(courseCard).join("")
+      : `<li class="glass card" style="align-items:center;text-align:center">${ic("search", "lg acc")}<p class="bold">Ештеңе табылмады</p><p class="muted small">Басқа сөзбен іздеп немесе санатты өзгертіп көріңіз.</p></li>`;
+  };
+  draw();
+  document.getElementById("q").addEventListener("input", (e) => { q = e.target.value; draw(); });
+  main.addEventListener("click", onCoursesClick);
+  cleanup = () => main.removeEventListener("click", onCoursesClick);
+  function onCoursesClick(e) {
+    const f = e.target.closest("[data-f]"); if (f) { filter = f.dataset.f; draw(); return; }
+    const b = e.target.closest("[data-enroll]");
+    if (b) { const id = +b.dataset.enroll; const pts = enroll(id); draw(); const t = document.querySelector(`[data-toast="${id}"]`); if (t) t.textContent = pts ? `Курсқа тіркелдіңіз! +${pts} ұпай 🎉` : "Сіз бұл курсқа тіркелгенсіз."; }
+  }
+}
+
+function renderCourse(id) {
+  const c = COURSES.find((x) => x.id === id); if (!c) return renderCourses("all");
+  const enrolled = S.enrolled.includes(c.id), pr = courseProgress(c);
+  const mins = c.lessons.reduce((s, l) => s + l.min, 0);
+  main.innerHTML = `${header(c.title, "#courses", "Курстар")}
+  <div class="badges"><span class="badge p">${SUBJECTS[c.subject]}</span><span class="badge">${esc(c.level)}</span><span class="badge"><span style="color:var(--gold);display:inline-flex">${ic("star", "sm")}</span>${c.rating.toFixed(1)}</span></div>
+  <div class="glass card">
+    <p style="line-height:1.6;font-size:14px">${esc(c.description)}</p>
+    <p class="row small muted">${ic("grad", "sm acc")}<span>Оқытушы: <b style="color:var(--fg)">${esc(c.instructor)}</b></span></p>
+    <dl class="grid3" style="margin:0;text-align:center">
+      ${[["book", c.lessons.length, "сабақ"], ["clock", mins + " мин", "ұзақтығы"], ["users", fmt(c.students + (enrolled ? 1 : 0)), "студент"]].map(([i, v, l]) =>
+        `<div style="display:flex;flex-direction:column-reverse;align-items:center;background:rgba(255,255,255,.05);border-radius:12px;padding:8px 4px"><dt class="xs muted">${l}</dt><dd style="margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:14px">${ic(i, "sm acc")}${v}</dd></div>`).join("")}
+    </dl>
+    ${enrolled ? `<div><div class="row between xs" style="margin-bottom:6px"><span class="muted">Прогресс</span><b>${pr.d}/${c.lessons.length} · ${pr.pct}%</b></div><div class="bar" role="progressbar" aria-label="Курс прогрессі" aria-valuenow="${pr.pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pr.pct}%"></i></div></div>
+      ${pr.next ? `<a class="btn block" href="#lesson-${pr.next.id}">${pr.d ? "Келесі сабақ" : "Оқуды бастау"} ${ic("arrow", "sm")}</a>` : `<p class="small bold" style="text-align:center;color:var(--good);background:rgba(52,211,153,.1);border-radius:12px;padding:10px">Құттықтаймыз! Курс аяқталды 🎉</p>`}`
+      : `<button class="btn block" id="enrollBtn">+ Тіркелу (+20 ұпай)</button>`}
+    <p class="toast" role="status" aria-live="polite" id="toast"></p>
+  </div>
+  <section class="section"><h2>Сабақтар</h2><ol style="display:flex;flex-direction:column;gap:8px">
+    ${c.lessons.map((l, i) => {
+      const done = S.done.includes(l.id), next = pr.next && pr.next.id === l.id;
+      const icon = !enrolled ? ic("lock", "lg") : done ? `<span style="color:var(--good);display:flex">${ic("check", "lg")}</span>` : next ? `<span style="color:var(--accent);display:flex">${ic("play", "lg")}</span>` : `<span class="muted" style="display:flex">${ic("circle", "lg")}</span>`;
+      const inner = `${icon}<span style="flex:1;min-width:0"><span class="small bold" style="display:block">${i + 1}. ${esc(l.title)}</span><span class="xs muted">${l.min} мин${done ? " · аяқталды ✓" : ""}</span></span>${enrolled ? `<span class="muted" style="display:flex">${ic("right", "sm")}</span>` : ""}`;
+      return `<li>${enrolled ? `<a class="glass lesson-item ${done ? "done" : ""} ${next ? "next" : ""}" href="#lesson-${l.id}">${inner}</a>` : `<div class="glass lesson-item" style="opacity:.7" aria-label="${esc(l.title)}: курсқа тіркелгеннен кейін ашылады">${inner}</div>`}</li>`;
+    }).join("")}
+  </ol></section>`;
+  const b = document.getElementById("enrollBtn");
+  if (b) b.onclick = () => { const pts = enroll(c.id); renderCourse(c.id); document.getElementById("toast").textContent = `Курсқа тіркелдіңіз! +${pts} ұпай 🎉`; };
+}
+
+function renderLesson(id, tab) {
+  const found = lessonById(id); if (!found) return renderHome();
+  const { lesson: l, course: c } = found;
+  if (!S.enrolled.includes(c.id)) { location.replace("#course-" + c.id); return; }
+  const idx = c.lessons.indexOf(l), prev = c.lessons[idx - 1], next = c.lessons[idx + 1];
+  main.innerHTML = `${header(l.title, "#course-" + c.id, c.title, `${idx + 1}/${c.lessons.length}-сабақ · ${l.min} мин`)}
+    <div class="glass tabs" role="tablist" aria-label="Сабақ бөлімдері">
+      ${[["lesson", "Сабақ", "book"], ["tutor", "AI-тьютор", "bot"], ["quiz", "AI тест", "quiz"]].map(([t, label, i]) =>
+        `<button class="tab" role="tab" id="tab-${t}" aria-controls="panel" aria-selected="${t === tab}" tabindex="${t === tab ? 0 : -1}" data-tab="${t}">${ic(i, "sm")}${label}</button>`).join("")}
+    </div>
+    <div id="panel" role="tabpanel" aria-labelledby="tab-${tab}" style="display:flex;flex-direction:column;gap:14px"></div>`;
+  const panel = document.getElementById("panel");
+  const tabs = [...main.querySelectorAll(".tab")];
+  tabs.forEach((b, i) => {
+    b.onclick = () => {
+      history.replaceState(null, "", "#lesson-" + id + (b.dataset.tab === "lesson" ? "" : "-" + b.dataset.tab));
+      if (cleanup) { cleanup(); cleanup = null; }
+      renderLesson(id, b.dataset.tab);
+    };
+    b.onkeydown = (e) => { if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + (e.key === "ArrowRight" ? 1 : 2)) % 3]; n.click(); setTimeout(() => main.querySelector(`[data-tab="${n.dataset.tab}"]`)?.focus()); } };
+  });
+  if (tab === "lesson") {
+    const done = S.done.includes(l.id);
+    panel.innerHTML = `<article class="glass card article">${l.content.split(/\n{2,}/).map((p) => `<p>${esc(p)}</p>`).join("")}</article>
+      <div id="completeBox">${done ? doneBox() : `<button class="btn accent block" id="completeBtn">${ic("check", "sm")}Сабақты аяқтау (+50 ұпай)</button>`}</div>
+      <p class="toast" role="status" aria-live="polite" id="toast"></p>
+      <nav aria-label="Сабақтар арасында өту" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${prev ? `<a class="btn ghost sm" href="#lesson-${prev.id}">${ic("left", "sm")}Алдыңғы</a>` : "<span></span>"}
+        ${next ? `<a class="btn ghost sm" href="#lesson-${next.id}">Келесі${ic("right", "sm")}</a>` : "<span></span>"}
+      </nav>`;
+    function doneBox() { return `<div style="display:flex;flex-direction:column;gap:8px"><p class="small bold" style="text-align:center;color:var(--good);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:12px;padding:10px">✓ Сабақ аяқталды</p><a class="btn block" href="${next ? "#lesson-" + next.id : "#course-" + c.id}">${next ? "Келесі сабаққа өту" : "Курс бетіне оралу"} ${ic("arrow", "sm")}</a></div>`; }
+    const btn = document.getElementById("completeBtn");
+    if (btn) btn.onclick = () => {
+      if (!S.done.includes(l.id)) S.done.push(l.id);
+      const pts = award("lesson:" + l.id, 50); save();
+      document.getElementById("completeBox").innerHTML = doneBox();
+      document.getElementById("toast").textContent = pts ? `Тамаша! Сабақ аяқталды: +${pts} ұпай 🎉` : "Сабақ бұрын аяқталған.";
+    };
+  } else if (tab === "tutor") {
+    cleanup = mountChat(panel, { lesson: l, course: c, height: "480px" });
+  } else {
+    mountQuiz(panel, l);
+  }
+}
+
+/* ---------- AI tutor chat ---------- */
+const chats = {};
+function mountChat(host, { lesson, course, height }) {
+  const key = lesson ? "l" + lesson.id : "general";
+  const turns = (chats[key] ||= []);
+  let ctl = null, busy = false, err = null;
+  const suggestions = lesson ? ["Осы сабақты қысқаша түсіндірші", "Маған бір мысал келтірші", "Ең маңызды 3 ойды атап берші"]
+    : ["Пифагор теоремасын түсіндіріп берші", "Химиялық реакцияның түрлері қандай?", "Present Simple қашан қолданылады?"];
+  host.insertAdjacentHTML("beforeend", `<div class="glass chat" style="height:${height}">
+    <div class="log" role="log" aria-live="polite" aria-label="AI-тьютормен сөйлесу"></div>
+    <form class="composer"><label class="sr" for="ask">Сұрағыңыз</label>
+      <textarea id="ask" class="input" rows="1" maxlength="2000" placeholder="Сұрағыңызды жазыңыз…"></textarea>
+      <button class="btn icon" type="submit" aria-label="Жіберу">${ic("send")}</button></form></div>`);
+  const log = host.querySelector(".log"), form = host.querySelector("form"), ta = host.querySelector("textarea"), btn = form.querySelector("button");
+  const rules = TUTOR_RULES + (lesson ? `\n\nОқушы қазір мына сабақты оқып жатыр.\nКурс: «${course.title}»\nСабақ: «${lesson.title}»\nСабақ мазмұны:\n"""\n${lesson.content}\n"""\nЖауап бергенде осы мазмұнға сүйен.` : "");
+  function draw(liveText) {
+    let h = "";
+    if (!turns.length) h = `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:16px 4px">
+        <span class="ava" style="width:48px;height:48px;border-radius:15px">${ic("bot", "lg")}</span>
+        <p class="muted small">${lesson ? "Осы сабақ бойынша кез келген сұрақ қойыңыз — мен сабақ мазмұнын білемін." : "Сәлем! Мен EduVerse AI-тьюторымын. Сұрағыңызды қазақ тілінде жазыңыз."}</p>
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%">${suggestions.map((s) => `<button type="button" class="sugg" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div></div>`;
+    h += turns.map((t) => `<div class="msg ${t.role === "user" ? "me" : "ai"}"><span class="sr">${t.role === "user" ? "Сіз: " : "AI-тьютор: "}</span>${esc(t.content)}</div>`).join("");
+    if (busy) h += liveText ? `<div class="msg ai">${esc(liveText)}</div>` : `<div class="msg ai typing" role="status"><span class="sr">AI-тьютор жауап жазып жатыр…</span><i></i><i></i><i></i></div>`;
+    if (err) h += `<div class="err" role="alert">${esc(err)}</div>`;
+    log.innerHTML = h; log.scrollTop = log.scrollHeight;
+    btn.innerHTML = busy ? ic("stop") : ic("send");
+    btn.className = busy ? "btn icon danger" : "btn icon";
+    btn.setAttribute("aria-label", busy ? "Жауапты тоқтату" : "Жіберу");
+  }
+  async function send(text) {
+    text = text.trim(); if (!text || busy) return;
+    err = null; turns.push({ role: "user", content: text.slice(0, 2000) }); ta.value = "";
+    busy = true; draw("");
+    S.tutorCount++; touchDay(); save();
+    const sample = await getSample();
+    if (!sample) { busy = false; err = "AI бұл көріністе қолжетімсіз. Бетті Claude ішінде ашыңыз."; turns.pop(); draw(); return; }
+    ctl = new AbortController();
+    try {
+      const { text: answer } = await sample([{ role: "user", content: rules }, ...turns.slice(-12)], {
+        cache: false, modelTier: "quick", signal: ctl.signal, onText: ({ text }) => draw(text),
+      });
+      turns.push({ role: "assistant", content: answer });
+    } catch (e) {
+      if (e?.text) turns.push({ role: "assistant", content: e.text });
+      if (e?.code !== "cancelled") err = aiErr(e);
+    } finally { busy = false; ctl = null; draw(); }
+  }
+  form.onsubmit = (e) => { e.preventDefault(); if (busy) ctl?.abort(); else send(ta.value); };
+  ta.onkeydown = (e) => {
+    if (e.key !== "Enter" || e.shiftKey) return;
+    if (e.isComposing || e.keyCode === 229) return; // IME (CJK) кезінде жібермейміз
+    e.preventDefault(); if (!busy) send(ta.value);
+  };
+  log.onclick = (e) => { const s = e.target.closest("[data-s]"); if (s) send(s.dataset.s); };
+  draw();
+  return () => ctl?.abort();
+}
+
+function renderTutorPage() {
+  main.innerHTML = `${header("AI-тьютор", null, null, "Қазақ тілінде қысқа әрі түсінікті жауап береді.")}<div id="chatHost"></div>`;
+  cleanup = mountChat(document.getElementById("chatHost"), { height: "calc(100dvh - 250px)" });
+  document.querySelector("#chatHost .chat").style.minHeight = "400px";
+}
+
+/* ---------- AI quiz ---------- */
+function mountQuiz(host, lesson) {
+  const st = (S.quizzes[lesson.id] ||= { current: null, history: [] });
+  let answers = st.current ? st.current.questions.map(() => null) : [], error = null, pending = false;
+  function draw() {
+    const q = st.current;
+    if (!q) {
+      host.innerHTML = `<div class="glass card" style="text-align:center;align-items:center">
+        <span class="ava" style="width:56px;height:56px;border-radius:16px">${ic("spark", "lg")}</span>
+        <h2 style="font-size:18px">AI тест</h2>
+        <p class="muted small">AI осы сабақ бойынша 5 сұрақ құрастырады. Бірінші тестте әр дұрыс жауап үшін +10 ұпай.</p>
+        ${error ? `<p class="err" role="alert">${esc(error)}</p>` : ""}
+        <button class="btn block" id="gen" ${pending ? "disabled" : ""}>${pending ? "Тест құрастырылуда…" : ic("spark", "sm") + "AI тест құрастыру"}</button>
+        ${pending ? '<p class="xs muted" role="status">Бұл 10–40 секундқа созылуы мүмкін.</p>' : ""}</div>`;
+      host.querySelector("#gen").onclick = generate; return;
+    }
+    const r = q.result;
+    host.innerHTML = `${r ? `<div class="glass card" style="text-align:center" role="status"><p class="small muted">Нәтиже</p><p style="font-size:38px;font-weight:800;font-variant-numeric:tabular-nums">${r.score}/${r.total}</p><p class="small bold" style="color:var(--good)">${r.awarded ? `+${r.awarded} ұпай қосылды 🎉` : "Бұл сабақ бойынша тест ұпайы бұрын берілген."}</p></div>` : ""}
+      <form id="qf" style="display:flex;flex-direction:column;gap:12px">
+      ${q.questions.map((qq, qi) => `<fieldset class="glass" ${r ? "disabled" : ""}><legend>${qi + 1}. ${esc(qq.question)}</legend>
+        ${qq.options.map((o, oi) => {
+          const chosen = r ? r.answers[qi] === oi : answers[qi] === oi;
+          const cls = r ? (oi === qq.correct ? "ok" : chosen ? "no" : "dim") : chosen ? "sel" : "";
+          return `<label class="opt ${cls}"><input class="sr" type="radio" name="q${qi}" value="${oi}" ${chosen ? "checked" : ""}><span class="k" aria-hidden="true">${"ABCD"[oi]}</span><span style="flex:1;min-width:0;padding-top:2px">${esc(o)}</span>${r && oi === qq.correct ? `<span style="color:var(--good);display:flex" aria-label="Дұрыс жауап">${ic("check", "sm")}</span>` : ""}${r && chosen && oi !== qq.correct ? `<span style="color:var(--bad);display:flex" aria-label="Қате жауап">${ic("x", "sm")}</span>` : ""}</label>`;
+        }).join("")}
+        ${r && r.answers[qi] !== qq.correct ? `<p class="explain"><b style="color:var(--fg)">Түсіндірме:</b> ${esc(qq.explain)}</p>` : ""}
+      </fieldset>`).join("")}
+      ${error ? `<p class="err" role="alert">${esc(error)}</p>` : ""}
+      ${r ? `<button type="button" class="btn ghost block" id="regen" ${pending ? "disabled" : ""}>${ic("refresh", "sm")}${pending ? "Құрастырылуда…" : "Жаңа тест құрастыру"}</button>`
+          : `<button type="submit" class="btn block">Жауаптарды тапсыру (${answers.filter((a) => a !== null).length}/${q.questions.length})</button>`}
+      </form>`;
+    const f = host.querySelector("#qf");
+    f.onchange = (e) => { const m = e.target.name?.match(/^q(\d+)$/); if (m) { answers[+m[1]] = +e.target.value; const keep = e.target.name; draw(); host.querySelector(`input[name="${keep}"]:checked`)?.focus(); } };
+    f.onsubmit = (e) => { e.preventDefault(); submit(); };
+    const rg = host.querySelector("#regen"); if (rg) rg.onclick = () => { st.current = null; save(); generate(); };
+  }
+  async function generate() {
+    error = null; pending = true; draw();
+    const sample = await getSample();
+    if (!sample) { pending = false; error = "AI бұл көріністе қолжетімсіз. Бетті Claude ішінде ашыңыз."; draw(); return; }
+    try {
+      const data = await sample.json(`Төмендегі сабақ мазмұны бойынша 5 көп таңдаулы тест сұрағын құрастыр. Барлық мәтін тек қазақ тілінде болсын.
+Әр сұрақта дәл 4 жауап нұсқасы, тек біреуі дұрыс. "correct" — дұрыс нұсқаның индексі (0–3). "explain" — дұрыс жауаптың 1–2 сөйлемдік түсіндірмесі.
+Тек мына пішіндегі JSON қайтар:
+{"questions":[{"question":"...","options":["...","...","...","..."],"correct":0,"explain":"..."}]}
+
+Сабақ: ${lesson.title}
+"""
+${lesson.content}
+"""`, { cache: false });
+      const qs = (data?.questions || []).filter((x) => x && typeof x.question === "string" && Array.isArray(x.options) && x.options.length === 4 && Number.isInteger(x.correct) && x.correct >= 0 && x.correct < 4).slice(0, 5)
+        .map((x) => { // нұсқаларды араластырамыз
+          const order = [0, 1, 2, 3].sort(() => Math.random() - .5);
+          return { question: String(x.question), options: order.map((i) => String(x.options[i])), correct: order.indexOf(x.correct), explain: String(x.explain || "") };
+        });
+      if (qs.length < 5) throw { code: "invalid_json" };
+      st.current = { questions: qs, result: null }; answers = qs.map(() => null); save();
+    } catch (e) { if (e?.code !== "cancelled") error = aiErr(e); }
+    pending = false; draw();
+  }
+  function submit() {
+    const q = st.current; if (!q || q.result) { error = "Бұл тест бұрын тапсырылған."; draw(); return; }
+    if (answers.some((a) => a === null)) { error = "Тапсырмас бұрын барлық сұраққа жауап беріңіз."; draw(); return; }
+    error = null;
+    const score = q.questions.reduce((s, qq, i) => s + (qq.correct === answers[i] ? 1 : 0), 0);
+    const awarded = S.events.some((e) => e.key === "quiz:" + lesson.id) ? 0 : (award("quiz:" + lesson.id, score * 10), score * 10);
+    q.result = { answers: answers.slice(), score, total: q.questions.length, awarded };
+    st.history.push({ score, total: q.questions.length }); touchDay(); save(); draw();
+    host.scrollIntoView({ block: "start" });
+  }
+  draw();
+}
+
+/* ---------- achievements & profile ---------- */
+function renderAchievements() {
+  const st = stats(), list = achievements(st);
+  main.innerHTML = `${header("Марапаттар", null, null, "Ұпай жинап, жаңа жетістіктерді ашыңыз")}
+  <section class="grid3" aria-label="Ұпайлар">
+    <div class="glass tile">${ic("spark", "sm acc")}<span class="v">${fmt(st.total)}</span><span class="l">Жалпы ұпай</span></div>
+    <div class="glass tile">${ic("cal", "sm acc")}<span class="v">${fmt(st.monthPts)}</span><span class="l">Осы айда</span></div>
+    <div class="glass tile">${ic("flame", "sm acc")}<span class="v">${st.streak} күн</span><span class="l">Оқу сериясы</span></div>
+  </section>
+  <section class="section"><div class="row between"><h2 style="font-size:16px;font-weight:800">Жетістіктер</h2><span class="xs muted">${list.filter((a) => a.on).length}/${list.length} ашылды</span></div>
+  <ul class="achs">${list.map((a) => `<li><div class="glass ach ${a.on ? "on" : ""}">
+    <div class="row"><span class="medal">${ic(a.on ? a.icon : "lock")}</span><span style="min-width:0"><span class="small bold" style="display:block;line-height:1.25">${a.title}</span><span class="xs bold" style="color:${a.on ? "var(--accent)" : "var(--muted)"}">${a.on ? "Ашық" : "Жабық"}</span></span></div>
+    <p class="xs muted">${a.desc}</p>
+    ${a.on ? "" : `<div class="row" style="margin-top:auto"><div class="bar" role="progressbar" aria-label="${a.title}: ${a.cur}/${a.target}" aria-valuenow="${a.cur}" aria-valuemin="0" aria-valuemax="${a.target}"><i style="width:${Math.round(a.cur / a.target * 100)}%"></i></div><span class="xs bold">${a.cur}/${a.target}</span></div>`}
+  </div></li>`).join("")}</ul></section>`;
+}
+
+function renderProfile() {
+  const st = stats();
+  main.innerHTML = `<h1 class="sr">Профиль</h1>
+  <div class="glass card" style="align-items:center;text-align:center;padding-block:24px">
+    <span class="ava" style="width:80px;height:80px;font-size:26px;box-shadow:0 12px 30px -10px rgba(124,92,255,.8)" aria-hidden="true">${esc(initials(S.name))}</span>
+    <div style="display:flex;flex-direction:column;gap:6px;width:100%"><label class="sr" for="nm">Атыңыз</label>
+      <input id="nm" class="input" style="text-align:center;font-weight:800;font-size:17px" maxlength="60" value="${esc(S.name)}"></div>
+    <p class="muted small">${esc(S.email)}</p>
+  </div>
+  <section class="grid3" aria-label="Оқу статистикасы">
+    <div class="glass tile">${ic("book", "sm acc")}<span class="v">${st.enrolled}</span><span class="l">Тіркелген курстар</span></div>
+    <div class="glass tile">${ic("check", "sm acc")}<span class="v">${st.lessons}</span><span class="l">Аяқталған сабақтар</span></div>
+    <div class="glass tile">${ic("spark", "sm acc")}<span class="v">${fmt(st.total)}</span><span class="l">Жалпы ұпай</span></div>
+  </section>
+  <section class="section"><h2 class="row">${ic("cloud", "sm acc")}Huawei Cloud архитектурасы</h2><div class="glass" style="padding:6px"><ul class="lb">
+    ${[["Elastic Cloud Server", "Қосымша сервері (Docker + nginx)"], ["RDS for PostgreSQL", "Пайдаланушылар, курстар, прогресс"], ["DCS for Redis", "Сессиялар, рейтинг кэші, AI лимиті"], ["ModelArts Studio (MaaS)", "AI-тьютор мен тест генераторы"]]
+      .map(([n, r]) => `<li><span style="color:var(--accent);display:flex">${ic("cloud", "sm")}</span><span style="min-width:0"><span class="small bold" style="display:block">${n}</span><span class="xs muted">${r}</span></span></li>`).join("")}
+  </ul></div><p class="xs muted">Бұл демо нұсқада AI-ді Claude атқарады, ал деректер браузерде сақталады.</p></section>
+  <div id="resetBox"><button class="btn danger block" id="reset">${ic("logout", "sm")}Шығу (демо деректерді тазарту)</button></div>`;
+  document.getElementById("nm").onchange = (e) => { const v = e.target.value.trim(); if (v.length >= 2) { S.name = v; save(); renderProfile(); } };
+  document.getElementById("reset").onclick = () => {
+    document.getElementById("resetBox").innerHTML = `<div class="glass card"><p class="small">Барлық прогресс пен ұпайлар өшіріледі. Жалғастырасыз ба?</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="btn ghost" id="no">Жоқ</button><button class="btn danger" id="yes">Иә, тазарту</button></div></div>`;
+    document.getElementById("no").onclick = renderProfile;
+    document.getElementById("yes").onclick = () => { S = seedState(); S.enrolled = []; S.done = []; S.events = []; S.activeDays = []; save(); Object.keys(chats).forEach((k) => delete chats[k]); go("home"); };
+  };
+}
+
+/* ---------- 3D campus ---------- */
+function renderCampus() {
+  main.innerHTML = `${header("Виртуалды кампус", "#home", "Басты", "Ғимаратты таңдап, оның бөліміне өтіңіз")}
+  <div class="glass stage" id="stage" role="img" aria-label="Интерактивті 3D кампус. Ғимаратты төмендегі тізімнен де таңдауға болады."><span class="hint">${ic("hand", "sm")} Айналдыру · масштабтау · басу</span></div>
+  <div class="blds" role="group" aria-label="Ғимараттар">${BUILDINGS.map((b) => `<button class="bld" aria-pressed="false" data-b="${b.id}"><span class="dot" style="background:${b.hex}"></span><span style="min-width:0">${b.name}</span></button>`).join("")}</div>
+  <div id="info" aria-live="polite"><p class="muted small" style="text-align:center">Толығырақ білу үшін ғимаратты таңдаңыз.</p></div>`;
+  let selected = null, groups = {};
+  const info = document.getElementById("info");
+  function select(id) {
+    selected = id;
+    main.querySelectorAll("[data-b]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.b === id)));
+    const b = BUILDINGS.find((x) => x.id === id);
+    info.innerHTML = b ? `<div class="glass card"><div class="row"><span class="dot" style="background:${b.hex};width:12px;height:12px"></span><h2 style="font-size:18px">${b.name}</h2></div><p class="muted small" style="line-height:1.55">${b.desc}</p>${b.href ? `<a class="btn block" href="${b.href}">${b.cta} ${ic("arrow", "sm")}</a>` : ""}</div>`
+      : `<p class="muted small" style="text-align:center">Толығырақ білу үшін ғимаратты таңдаңыз.</p>`;
+  }
+  main.querySelectorAll("[data-b]").forEach((btn) => btn.onclick = () => select(selected === btn.dataset.b ? null : btn.dataset.b));
+
+  const stage = document.getElementById("stage");
+  if (!window.THREE) { stage.insertAdjacentHTML("afterbegin", `<p class="muted small" style="padding:24px;text-align:center">3D кітапханасы жүктелмеді. Ғимараттарды төмендегі тізімнен таңдаңыз.</p>`); return; }
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true }); }
+  catch { stage.insertAdjacentHTML("afterbegin", `<p class="muted small" style="padding:24px;text-align:center">Құрылғыңыз 3D графиканы (WebGL) қолдамайды. Ғимараттарды тізімнен таңдаңыз.</p>`); return; }
+  const T = THREE;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  stage.prepend(renderer.domElement);
+  const scene = new T.Scene(); scene.background = new T.Color(0x0b0c22); scene.fog = new T.Fog(0x0b0c22, 14, 30);
+  const cam = new T.PerspectiveCamera(45, 1, 0.1, 100); cam.position.set(8, 7, 9);
+  scene.add(new T.AmbientLight(0xffffff, 0.55), new T.HemisphereLight(0xa5b4fc, 0x0f172a, 0.6));
+  const sun = new T.DirectionalLight(0xffffff, 1.2); sun.position.set(6, 10, 4); sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024);
+  Object.assign(sun.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 }); scene.add(sun);
+  const std = (c, o = {}) => new T.MeshStandardMaterial({ color: c, roughness: .45, metalness: .1, ...o });
+  const mesh = (g, m, x = 0, y = 0, z = 0) => { const k = new T.Mesh(g, m); k.position.set(x, y, z); k.castShadow = true; return k; };
+  const ground = new T.Mesh(new T.CircleGeometry(7, 64), std(0x1a1c3a, { roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  const ring = new T.Mesh(new T.RingGeometry(2, 2.4, 64), std(0x2a2d5a)); ring.rotation.x = -Math.PI / 2; ring.position.y = .01; scene.add(ring);
+  [[-5.2, .6], [5.2, .4], [-1.6, 4.8], [1.8, 4.6], [-5, -3.6], [5, -3.4]].forEach(([x, z]) => scene.add(mesh(new T.ConeGeometry(.35, 1, 10), std(0x14b8a6), x, .5, z)));
+  let aiRing;
+  BUILDINGS.forEach((b) => {
+    const g = new T.Group(), m = std(b.color), roof = std(0xe5e7ff, { roughness: .6 });
+    if (b.id === "library") { g.add(mesh(new T.BoxGeometry(2, 1.4, 1.4), m, 0, .7), mesh(new T.BoxGeometry(2.2, .2, 1.6), roof, 0, 1.5)); [-.7, -.23, .23, .7].forEach((x) => g.add(mesh(new T.CylinderGeometry(.08, .08, 1.4, 12), roof, x, .7, .8))); }
+    if (b.id === "lab") g.add(mesh(new T.BoxGeometry(1.8, 1.2, 1.4), m, 0, .6), mesh(new T.CylinderGeometry(.15, .2, .9, 16), roof, .55, 1.55, -.3), mesh(new T.SphereGeometry(.28, 24, 24), std(0xa7f3d0, { transparent: true, opacity: .8 }), -.4, 1.3, .2));
+    if (b.id === "lecture") g.add(mesh(new T.BoxGeometry(2.2, 1.1, 1.6), m, 0, .55), mesh(new T.SphereGeometry(.65, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), roof, 0, 1.1));
+    if (b.id === "ai") { g.add(mesh(new T.CylinderGeometry(.55, .7, 2.2, 6), std(b.color, { emissive: b.color, emissiveIntensity: .2, metalness: .3 }), 0, 1.1)); aiRing = mesh(new T.TorusGeometry(.6, .06, 12, 48), std(0x2dd4bf, { emissive: 0x2dd4bf, emissiveIntensity: .8 }), 0, 2.5); aiRing.rotation.x = Math.PI / 2.4; g.add(aiRing); }
+    if (b.id === "sport") g.add(mesh(new T.CylinderGeometry(1.1, 1.2, .5, 32), m, 0, .25), mesh(new T.CylinderGeometry(.85, .85, .02, 32), std(0x22c55e), 0, .51));
+    if (b.id === "cafe") { g.add(mesh(new T.BoxGeometry(1.3, .9, 1.1), m, 0, .45)); const r = mesh(new T.ConeGeometry(1.05, .6, 4), std(0xfde68a), 0, 1.15); r.rotation.y = Math.PI / 4; g.add(r); }
+    g.position.set(b.pos[0], 0, b.pos[1]); g.userData.id = b.id; groups[b.id] = g; scene.add(g);
+  });
+  const controls = new T.OrbitControls(cam, renderer.domElement);
+  Object.assign(controls, { enablePan: false, enableDamping: true, minDistance: 6, maxDistance: 20, maxPolarAngle: Math.PI / 2.25, autoRotate: true, autoRotateSpeed: .6 });
+  const ray = new T.Raycaster(), ptr = new T.Vector2(); let down = null, hover = null;
+  const pick = (e) => { const r = renderer.domElement.getBoundingClientRect(); ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam);
+    const hit = ray.intersectObjects(Object.values(groups), true)[0]; let o = hit?.object; while (o && !o.userData.id) o = o.parent; return o?.userData.id || null; };
+  renderer.domElement.addEventListener("pointerdown", (e) => { down = [e.clientX, e.clientY]; });
+  renderer.domElement.addEventListener("pointerup", (e) => { if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 6) select(pick(e)); down = null; });
+  renderer.domElement.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") { hover = pick(e); renderer.domElement.style.cursor = hover ? "pointer" : "grab"; } });
+  const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+  const ro = new ResizeObserver(resize); ro.observe(stage); resize();
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let raf, last = performance.now();
+  const loop = (now) => {
+    const dt = Math.min((now - last) / 1000, .05); last = now;
+    controls.autoRotate = !selected && !reduce; controls.update();
+    if (aiRing && !reduce) aiRing.rotation.z += dt * .8;
+    for (const [id, g] of Object.entries(groups)) {
+      const target = id === selected ? 1.1 : id === hover ? 1.05 : 1;
+      const s = g.scale.x + (target - g.scale.x) * (1 - Math.exp(-10 * dt)); g.scale.setScalar(s);
+      g.traverse((o) => { if (o.material && o.material.emissive && id !== "ai") { o.material.emissive.setHex(id === selected ? BUILDINGS.find((b) => b.id === id).color : 0); o.material.emissiveIntensity = .35; } });
+    }
+    renderer.render(scene, cam); raf = requestAnimationFrame(loop);
+  };
+  raf = requestAnimationFrame(loop);
+  cleanup = () => { cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose(); scene.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); }); };
+}
+
+route();
+</script>
+
+</body></html>
